@@ -1,0 +1,85 @@
+use std::fmt::Debug;
+
+#[derive(Debug, Fail)]
+pub enum TransactionError {
+    #[fail(display = "UTXO has already been spent {:?} index: {:?}", _0, _1)]
+    AlreadySpent(Vec<u8>, u32),
+
+    #[fail(display = "there is a double spend occuring with this transaction {}", _0)]
+    DoubleSpend(String),
+
+    #[fail(display = "{}: {}", _0, _1)]
+    Crate(&'static str, String),
+
+    #[fail(display = "insufficient funds from input: {} to spend as output: {}", _0, _1)]
+    InsufficientFunds(u64, u64),
+
+    #[fail(display = "invalid coinbase transaction")]
+    InvalidCoinbaseTransaction,
+
+    #[fail(display = "invalid pub key hash script_pub_key: {} script_sig: {}", _0, _1)]
+    InvalidPubKeyHash(String, String),
+
+    #[fail(display = "invalid script pub key for format: {}", _0)]
+    InvalidScriptPubKey(String),
+
+    #[fail(display = "invalid transaction id {:?}", _0)]
+    InvalidTransactionId(usize),
+
+    #[fail(display = "invalid variable size integer: {:?}", _0)]
+    InvalidVariableSizeInteger(usize),
+
+    #[fail(display = "{}", _0)]
+    Message(String),
+
+    #[fail(display = "missing outpoint script public key")]
+    MissingOutpointScriptPublicKey,
+
+    #[fail(display = "the block has multiple coinbase transactions: {:?}", _0)]
+    MultipleCoinbaseTransactions(u32),
+
+    #[fail(display = "Null Error {:?}", _0)]
+    NullError(()),
+}
+
+impl From<hex::FromHexError> for TransactionError {
+    fn from(error: hex::FromHexError) -> Self {
+        TransactionError::Crate("hex", format!("{:?}", error))
+    }
+}
+
+impl From<std::io::Error> for TransactionError {
+    fn from(error: std::io::Error) -> Self {
+        TransactionError::Crate("std::io", format!("{:?}", error))
+    }
+}
+
+impl From<std::num::ParseIntError> for TransactionError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        TransactionError::Crate("std::num", format!("{:?}", error))
+    }
+}
+
+impl From<std::str::ParseBoolError> for TransactionError {
+    fn from(error: std::str::ParseBoolError) -> Self {
+        TransactionError::Crate("std::str", format!("{:?}", error))
+    }
+}
+
+impl From<()> for TransactionError {
+    fn from(_error: ()) -> Self {
+        TransactionError::NullError(())
+    }
+}
+
+impl From<&'static str> for TransactionError {
+    fn from(msg: &'static str) -> Self {
+        TransactionError::Message(msg.into())
+    }
+}
+
+impl From<TransactionError> for Box<dyn std::error::Error> {
+    fn from(error: TransactionError) -> Self {
+        error.into()
+    }
+}
