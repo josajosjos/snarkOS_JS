@@ -1,0 +1,81 @@
+[package]
+name = "snarkos"
+version = "0.8.0"
+authors = ["Michael Beller", "Collin Chin", "Raymond Chu", "Matthew Green", "Ian Miers", "Howard Wu"]
+description = "A decentralized record system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = ["cryptography", "blockchain", "decentralized", "record", "zkSNARK"]
+categories = ["cryptography"]
+include = ["Cargo.toml", "src", "README.md", "LICENSE.md"]
+license = "GPL-3.0"
+edition = "2018"
+
+[workspace]
+members = [
+    "algorithms",
+    "benchmarks",
+    "consensus",
+    "console",
+    "curves",
+    "dpc",
+    "errors",
+    "gadgets",
+    "models",
+    "network",
+    "objects",
+    "profiler",
+    "rpc",
+    "storage",
+    "utilities"
+]
+
+[lib]
+name = "node"
+path = "node/lib.rs"
+
+[[bin]]
+name = "snarkos"
+path = "node/main.rs"
+
+[dependencies]
+snarkos-consensus = { path = "./consensus" }
+snarkos-errors = { path = "./errors" }
+snarkos-network = { path = "./network" }
+snarkos-objects = { path = "objects" }
+snarkos-rpc = { path = "./rpc" }
+snarkos-storage = { path = "./storage" }
+
+clap = { version = "2.33.0" }
+env_logger = { version = "0.7.1" }
+hex = { version = "0.4.1" }
+log = { version = "0.4.8" }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "0.2", features = ["full"] }
+wagyu-bitcoin = { version = "0.6.1" }
+
+[dev-dependencies]
+rusty-hook = { version = "0.10.3" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+incremental = true
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = "thin"
+incremental = true
+debug-assertions = false
+
+[profile.dev]
+opt-level = 0
+
+[profile.test]
+opt-level = 3
+lto = "thin"
+incremental = true
+debug-assertions = true
+debug = true
