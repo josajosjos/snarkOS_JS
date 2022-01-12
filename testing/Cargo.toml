@@ -1,0 +1,32 @@
+[package]
+name = "snarkos-testing"
+version = "1.1.4"
+authors = ["The Aleo Team <hello@aleo.org>"]
+description = "Testing suite for a decentralized operating system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = ["aleo", "cryptography", "blockchain", "decentralized", "zero-knowledge"]
+categories = ["cryptography::cryptocurrencies", "operating-systems"]
+include = ["Cargo.toml", "src", "README.md", "LICENSE.md"]
+license = "GPL-3.0"
+edition = "2018"
+
+[dependencies]
+snarkvm-algorithms = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-curves = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-dpc = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-errors = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-models = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-objects = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-parameters = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+snarkvm-utilities = { git = "https://github.com/AleoHQ/snarkVM.git", rev = "14d1f50", version = "0.0.1" }
+
+snarkos-consensus = { path = "../consensus", version = "1.1.4" }
+snarkos-network = { path = "../network", version = "1.1.4" }
+snarkos-posw = { path = "../posw", version = "1.1.4" }
+snarkos-storage = { path = "../storage", version = "1.1.4"}
+
+once_cell = { version = "1.5.2" }
+rand = { version = "0.7.0" }
+rand_xorshift = { version = "0.2.0" }
+tokio = { version = "0.2.22", features = ["full"] }
