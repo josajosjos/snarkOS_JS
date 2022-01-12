@@ -1,0 +1,101 @@
+version: 2.1
+commands:
+  setup_environment:
+    description: "Setup testing environment"
+    parameters:
+      cache_key:
+        type: string
+        default: snark-cache-main
+    steps:
+      - run: set -e
+      - setup_remote_docker
+      - run:
+          name: Prepare envrionment and install dependencies
+          command: |
+            export SCCACHE_CACHE_SIZE=200M
+            export WORK_DIR="$CIRCLE_WORKING_DIRECTORY/.cache/sccache"
+            export SCCACHE_DIR="$CIRCLE_WORKING_DIRECTORY/.cache/sccache"
+            mkdir -p "$CIRCLE_WORKING_DIRECTORY/.bin"
+            wget https://github.com/mozilla/sccache/releases/download/0.2.13/sccache-0.2.13-x86_64-unknown-linux-musl.tar.gz
+            tar -C "$CIRCLE_WORKING_DIRECTORY/.bin" -xvf sccache-0.2.13-x86_64-unknown-linux-musl.tar.gz
+            mv $CIRCLE_WORKING_DIRECTORY/.bin/sccache-0.2.13-x86_64-unknown-linux-musl/sccache $CIRCLE_WORKING_DIRECTORY/.bin/sccache
+            export PATH="$PATH:$CIRCLE_WORKING_DIRECTORY/.bin"
+            export RUSTC_WRAPPER="sccache"
+            rm -rf "$CIRCLE_WORKING_DIRECTORY/.cargo/registry"
+            sudo apt-get update && sudo apt-get install -y clang llvm-dev llvm pkg-config xz-utils make libssl-dev libssl-dev
+      - restore_cache:
+          keys:
+            - << parameters.cache_key >>
+  clear_environment:
+    description: "Clear environment"
+    parameters:
+      cache_key:
+        type: string
+        default: snark-main
+    steps:
+      - run: (sccache -s||true)
+      - run: set +e
+      - save_cache:
+          key: << parameters.cache_key >>
+          paths:
+            - .cache/sccache
+            - .cargo
+jobs:
+  rust_stable:
+    docker:
+      - image: cimg/rust:1.43.0
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_environment:
+          cache_key: snark-main
+      - run:
+          name: Build and run tests
+          command: >
+            RUST_MIN_STACK=8388608 cargo test --all -- --skip dpc
+            --skip dpc_integration_test --skip startup_handshake_stored_peers
+      - clear_environment:
+          cache_key: snark-main
+  rust_nightly:
+    docker:
+      - image: daniilr/rust-nightly:2020-05-15
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_environment:
+          cache_key: snark-cache-nighty
+      - run: rustup component add rustfmt
+      - run: cargo fmt -- --check
+      - run: cargo clean
+      - run:
+          name: Build
+          command: |
+            export CARGO_INCREMENTAL=0
+            export RUSTFLAGS="-Zprofile -Zmir-opt-level=0 -Ccodegen-units=1 -Copt-level=0 -Coverflow-checks=off"
+            cargo build --verbose --all-features --workspace
+      - run:
+          name: Test
+          command: |
+            export CARGO_INCREMENTAL=0
+            export RUSTFLAGS="-Zprofile -Zmir-opt-level=0 -Ccodegen-units=1 -Copt-level=0 -Coverflow-checks=off"
+            cargo test --verbose --all-features --no-fail-fast --workspace --all -- --skip dpc --skip dpc_integration_test --skip startup_handshake_stored_peers
+      - run:
+          name: Download gcov
+          command: |
+            curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
+      - run:
+          name: Collect coverage
+          command: |
+            ./grcov ./target/debug -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info
+      - run:
+          name: Send coverage data
+          command: |
+            bash <(curl -s https://codecov.io/bash) -f lcov.info;
+      - clear_environment:
+          cache_key: snark-cache-nighty
+workflows:
+  version: 2
+  main-workflow:
+    jobs:
+      - rust_stable
+      - rust_nightly
