@@ -1,0 +1,20 @@
+[package]
+name = "snarkos-errors"
+version = "0.8.0"
+authors = ["The Aleo Team <hello@aleo.org"]
+description = "Errors for a decentralized record system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = ["cryptography", "blockchain", "decentralized", "record", "zkSNARK"]
+categories = ["cryptography"]
+include = ["Cargo.toml", "src", "README.md", "LICENSE.md"]
+license = "GPL-3.0"
+edition = "2018"
+
+[dependencies]
+bincode = { version = "1.2.0" }
+curl = { version = "0.4.29" }
+hex = { version = "0.4.2" }
+jsonrpc-core = { version = "14.0.5" }
+rocksdb = { version = "0.13.0" }
+thiserror = { version = "1.0" }
