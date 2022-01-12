@@ -1,0 +1,25 @@
+[package]
+name = "snarkos-curves"
+version = "0.8.0"
+authors = ["The Aleo Team <hello@aleo.org>"]
+description = "Curves for a decentralized record system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = ["cryptography", "blockchain", "decentralized", "record", "zkSNARK"]
+categories = ["cryptography"]
+include = ["Cargo.toml", "src", "README.md", "LICENSE.md"]
+license = "GPL-3.0"
+edition = "2018"
+
+[dependencies]
+snarkos-errors = { path = "../errors", version = "0.8.0", default-features = false }
+snarkos-models = { path = "../models", version = "0.8.0", default-features = false }
+snarkos-utilities = { path = "../utilities", version = "0.8.0" } # TODO: Add default-features=false back in.
+
+derivative = { version = "2" }
+rand = { version = "0.7" }
+serde = { version = "1.0.114", default-features = false, features = ["derive"] }
+rand_xorshift = { version = "0.2", default-features = false }
+
+[features]
+default = [ "snarkos-errors/default", "snarkos-models/default", "snarkos-utilities/default", ]
