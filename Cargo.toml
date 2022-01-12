@@ -1,0 +1,94 @@
+[package]
+name = "snarkos"
+version = "1.0.0"
+authors = ["The Aleo Team <hello@aleo.org>"]
+description = "A decentralized operating system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = ["aleo", "cryptography", "blockchain", "decentralized", "zero-knowledge"]
+categories = ["cryptography::cryptocurrencies", "operating-systems"]
+include = ["Cargo.toml", "src", "README.md", "LICENSE.md"]
+license = "GPL-3.0"
+edition = "2018"
+
+[workspace]
+members = [
+    "algorithms",
+    "benchmarks",
+    "consensus",
+    "curves",
+    "dpc",
+    "errors",
+    "gadgets",
+    "models",
+    "network",
+    "objects",
+    "parameters",
+    "posw",
+    "profiler",
+    "rpc",
+    "storage",
+    "testing",
+    "toolkit",
+    "utilities"
+]
+
+[lib]
+name = "snarkos"
+path = "snarkOS/lib.rs"
+
+[[bin]]
+name = "snarkos"
+path = "snarkOS/main.rs"
+
+[dependencies]
+snarkos-consensus = { path = "./consensus", version = "1.0.0" }
+snarkos-dpc = { path = "./dpc", version = "1.0.0" }
+snarkos-errors = { path = "./errors", version = "1.0.0" }
+snarkos-models = { path = "./models", version = "1.0.0" }
+snarkos-network = { path = "./network", version = "1.0.0" }
+snarkos-objects = { path = "./objects", version = "1.0.0" }
+snarkos-posw = { path = "./posw", version = "1.0.0" }
+snarkos-rpc = { path = "./rpc", version = "1.0.0" }
+snarkos-storage = { path = "./storage", version = "1.0.0" }
+snarkos-utilities = { path = "./utilities", version = "1.0.0" }
+
+clap = { version = "2.33.3" }
+colored = { version = "2.0" }
+dirs = { version = "3.0.1" }
+env_logger = { version = "0.7.1" }
+hex = { version = "0.4.1" }
+log = { version = "0.4.11" }
+rand = { version = "0.7" }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "0.2.22", features = ["full"] }
+toml = { version = "0.5.6" }
+
+[dev-dependencies]
+rusty-hook = { version = "0.11.2" }
+
+[build-dependencies]
+rustc_version = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+incremental = true
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = "thin"
+incremental = true
+debug-assertions = false
+
+[profile.dev]
+opt-level = 0
+
+[profile.test]
+opt-level = 3 # necessary for DPC testing
+lto = "thin"
+incremental = true
+debug-assertions = true
+debug = true
