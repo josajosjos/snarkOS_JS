@@ -1,0 +1,181 @@
+[package]
+name = "snarkos"
+version = "1.3.16"
+authors = [ "The Aleo Team <hello@aleo.org>" ]
+description = "A decentralized operating system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = [
+  "aleo",
+  "cryptography",
+  "blockchain",
+  "decentralized",
+  "zero-knowledge"
+]
+categories = [ "cryptography::cryptocurrencies", "operating-systems" ]
+include = [
+  "Cargo.toml",
+  "snarkos",
+  "README.md",
+  "LICENSE.md",
+  "build.rs",
+  "bin/"
+]
+license = "GPL-3.0"
+edition = "2018"
+default-run = "snarkos"
+
+[workspace]
+members = [
+  "benchmarks",
+  "consensus",
+  "metrics",
+  "network",
+  "parameters",
+  "profiler",
+  "rpc",
+  "storage",
+  "testing"
+]
+
+[lib]
+path = "snarkos/lib.rs"
+
+[[bin]]
+name = "snarkos"
+path = "bin/snarkos.rs"
+
+[[bin]]
+name = "crawler"
+path = "bin/crawler.rs"
+
+[[bin]]
+name = "beacon"
+path = "bin/beacon.rs"
+
+[[bin]]
+name = "sync_provider"
+path = "bin/sync_provider.rs"
+
+[dependencies.snarkvm-algorithms]
+version = "=0.7.9"
+default-features = false
+
+[dependencies.snarkvm-dpc]
+version = "=0.7.9"
+
+[dependencies.snarkvm-posw]
+version = "=0.7.9"
+
+[dependencies.snarkvm-utilities]
+version = "=0.7.9"
+
+[dependencies.snarkvm-parameters]
+version = "=0.7.9"
+
+[dependencies.snarkos-consensus]
+path = "./consensus"
+version = "1.3.16"
+
+[dependencies.snarkos-network]
+path = "./network"
+version = "1.3.16"
+
+[dependencies.snarkos-rpc]
+path = "./rpc"
+version = "1.3.16"
+
+[dependencies.snarkos-storage]
+path = "./storage"
+features = [ "rocksdb_storage" ]
+version = "1.3.16"
+
+[dependencies.anyhow]
+version = "1.0"
+
+[dependencies.clap]
+version = "2.33.3"
+
+[dependencies.colored]
+version = "2.0"
+
+[dependencies.dirs]
+version = "4.0"
+
+[dependencies.hex]
+version = "0.4.1"
+
+[dependencies.num_cpus]
+version = "1"
+
+[dependencies.parking_lot]
+version = "0.11.1"
+
+[dependencies.rand]
+version = "0.8"
+
+[dependencies.self_update]
+version = "0.27.0"
+features = [
+  "archive-zip",
+  "compression-zip-bzip2",
+  "compression-zip-deflate",
+  "compression-flate2"
+]
+
+[dependencies.serde]
+version = "1.0"
+features = [ "derive" ]
+
+[dependencies.thiserror]
+version = "1.0"
+
+[dependencies.tokio]
+version = "1"
+features = [ "parking_lot", "rt-multi-thread", "macros", "net" ]
+
+[dependencies.toml]
+version = "0.5.6"
+
+[dependencies.tracing]
+default-features = false
+features = [ "log" ]
+version = "0.1"
+
+[dependencies.tracing-subscriber]
+version = "0.2"
+
+[build-dependencies.capnpc]
+version = "0.14"
+optional = true
+
+[features]
+default = [ ]
+prometheus = [ "snarkos-network/prometheus" ]
+compile_capnp_schema = [ "capnpc" ]
+noconfig = [ ]
+cuda = [ "snarkvm-algorithms/cuda" ]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+incremental = true
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = "thin"
+incremental = true
+debug-assertions = false
+
+[profile.dev]
+opt-level = 0
+incremental = true
+
+[profile.test]
+opt-level = 3
+lto = "thin"
+incremental = true
+debug-assertions = true
+debug = true
