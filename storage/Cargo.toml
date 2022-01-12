@@ -1,0 +1,79 @@
+[package]
+name = "snarkos-storage"
+version = "1.3.12"
+authors = [ "The Aleo Team <hello@aleo.org>" ]
+description = "Storage for a decentralized operating system"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkOS"
+keywords = [
+  "aleo",
+  "cryptography",
+  "blockchain",
+  "decentralized",
+  "zero-knowledge"
+]
+categories = [ "cryptography::cryptocurrencies", "operating-systems" ]
+include = [ "Cargo.toml", "src", "README.md", "LICENSE.md" ]
+license = "GPL-3.0"
+edition = "2018"
+
+[features]
+default = [ "rocksdb_storage" ]
+rocksdb_storage = [ "rocksdb" ]
+mem_storage = [ ]
+test = [ ]
+
+[dependencies.snarkvm]
+git = "https://github.com/AleoHQ/snarkVM.git"
+rev = "ef32edc"
+# path = "../../snarkVM"
+features = ["parameters"]
+
+[dependencies.anyhow]
+version = "1.0.40"
+
+[dependencies.bincode]
+version = "1.3.1"
+
+[dependencies.hex]
+version = "0.4.2"
+
+[dependencies.parking_lot]
+version = "0.11"
+
+[dependencies.rand]
+version = "0.8"
+
+[dependencies.arc-swap]
+version = "1.2"
+
+[dependencies.rayon]
+version = "1"
+
+[dependencies.rocksdb]
+version = "0.17.0"
+optional = true
+
+[dependencies.serde]
+version = "1.0"
+features = [ "derive" ]
+
+[dependencies.thiserror]
+version = "1.0"
+
+[dependencies.tokio]
+version = "1"
+
+[dependencies.tracing]
+default-features = false
+features = [ "log" ]
+version = "0.1"
+
+[dev-dependencies.snarkos-consensus]
+path = "../consensus"
+
+[dev-dependencies.snarkos-testing]
+path = "../testing"
+
+[dev-dependencies.tracing-subscriber]
+version = "0.2"
